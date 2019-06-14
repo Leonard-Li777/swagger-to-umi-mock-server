@@ -1,0 +1,70 @@
+{
+ "name": "swagger-to-umi-mock-server",
+ "version": "0.0.0",
+ "description": "swagger 文档一健转 umi mock 服务 (swagger docs transform to umi mock server)",
+ "main": "lib/index.js",
+ "bin": {
+  "swagger-umi-serve": "dist/index.js"
+ },
+ "repository": {
+  "type": "git",
+  "url": "git+https://github.com/Leonard-Li777/swagger-to-umi-mock-server.git"
+ },
+ "keywords": [
+  "swagger",
+  "mock",
+  "umi-mock-server",
+  "umi-plugin-swagger-to-mock"
+ ],
+ "author": "seaeye777@qq.com",
+ "license": "MIT",
+ "bugs": {
+  "url": "https://github.com/Leonard-Li777/swagger-to-umi-mock-server/issues"
+ },
+ "homepage": "https://github.com/Leonard-Li777/swagger-to-umi-mock-server",
+ "files": [
+  "dist"
+ ],
+ "scripts": {
+  "bootstrap": "lerna bootstrap",
+  "build": "father build --watch",
+  "changelog": "lerna-changelog",
+  "chore:update-deps": "./scripts/update_deps.sh",
+  "chore:reinstall_deps": "./scripts/reinstall_deps.sh",
+  "lint": "eslint --ext .js packages",
+  "precommit": "lint-staged",
+  "prettier": "prettier --write '**/*.{js,jsx,tsx,ts,less,md,json}'",
+  "publish": "./scripts/publish.js"
+ },
+ "lint-staged": {
+  "**/*.{js,jsx,tsx,ts,less,md,json}": [
+   "prettier --write",
+   "git add"
+  ]
+ },
+ "devDependencies": {
+  "babel-eslint": "10.0.1",
+  "chokidar": "2.0.4",
+  "coveralls": "3.0.2",
+  "eslint": "5.10.0",
+  "eslint-config-airbnb": "17.1.0",
+  "eslint-config-prettier": "^4.2.0",
+  "eslint-plugin-import": "2.14.0",
+  "eslint-plugin-jsx-a11y": "6.1.2",
+  "eslint-plugin-prettier": "^3.1.0",
+  "eslint-plugin-react": "7.11.1",
+  "father": "^2.3.0",
+  "form-data": "^2.3.3",
+  "got": "9.3.2",
+  "husky": "1.2.0",
+  "lerna": "^3.6.0",
+  "lerna-changelog": "0.8.2",
+  "lint-staged": "8.1.0",
+  "mkdirp": "^0.5.1",
+  "moment": "^2.24.0",
+  "prettier": "1.15.3",
+  "serve-handler": "5.0.8",
+  "serve-static": "^1.13.2",
+  "shelljs": "0.8.3"
+ }
+}

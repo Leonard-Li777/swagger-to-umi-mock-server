@@ -1,0 +1,42 @@
+{
+	"name": "umi-plugin-swagger-to-mock",
+	"version": "0.0.0",
+	"description": "swagger 文档一健转 umi mock 服务 (swagger docs transform to umi mock server)",
+	"main": "lib/index.js",
+	"bin": {
+		"swagger-umi-serve": "lib/index.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Leonard-Li777/swagger-to-umi-mock-server/packages/umi-plugin-swagger-to-mock"
+	},
+	"keywords": [
+		"swagger",
+		"mock",
+		"umi-mock-server",
+		"umi-plugin-swagger-to-mock"
+	],
+	"author": "seaeye <seaeye777@qq.com> (https://github.com/Leonard-Li777)",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/Leonard-Li777/swagger-to-umi-mock-server/issues"
+	},
+	"homepage": "https://github.com/Leonard-Li777/swagger-to-umi-mock-server",
+	"files": [
+		"lib",
+		"src"
+	],
+	"lint-staged": {
+		"**/*.{js,jsx,tsx,ts,less,md,json}": [
+			"prettier --write",
+			"git add"
+		]
+	},
+	"dependencies": {
+		"globby": "7.1.1",
+		"mustache": "3.0.1",
+		"mockjs": "^1.0.1-beta3",
+		"chokidar": "2.0.4",
+		"swagger-parser-mock": "^1.1.2"
+	}
+}

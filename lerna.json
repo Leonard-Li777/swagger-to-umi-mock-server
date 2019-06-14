@@ -1,0 +1,21 @@
+{
+  "changelog": {
+    "labels": {
+      "pr(enhancement)": ":rocket: Enhancement",
+      "pr(bug)": ":bug: Bug Fix",
+      "pr(documentation)": ":book: Documentation",
+      "pr(dependency)": ":deciduous_tree: Dependency",
+      "pr(chore)": ":turtle: Chore"
+    },
+    "repo": "Leonard-Li777/swagger-to-umi-mock-server",
+    "cacheDir": ".changelog"
+  },
+  "packages": ["packages/*"],
+  "command": {
+    "version": {
+      "exact": true
+    }
+  },
+  "npmClient": "yarn",
+  "version": "independent"
+}
