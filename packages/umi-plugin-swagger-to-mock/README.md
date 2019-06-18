@@ -68,7 +68,9 @@ $ curl -X POST http://localhost:8001/mock/store/order
         └── team.js
 ```
 
-- api.js [使用 umi 的 mock 功能](https://umijs.org/zh/guide/mock-data.html#%E4%BD%BF%E7%94%A8-umi-%E7%9A%84-mock-%E5%8A%9F%E8%83%BD) apiPathToMockPath.js 用户自定义函数用于转换直实路径到 mock 路径，一般用于代理识别和调试实别，可省略，默认值
+- api.js [使用 umi 的 mock 功能](https://umijs.org/zh/guide/mock-data.html#%E4%BD%BF%E7%94%A8-umi-%E7%9A%84-mock-%E5%8A%9F%E8%83%BD)
+
+- apiPathToMockPath.js 用户自定义函数用于转换直实路径到 mock 路径，一般用于代理识别和调试实别，可省略，默认值
 
 ```javascript
 function path2mockDefault(path) {
