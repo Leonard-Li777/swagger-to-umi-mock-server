@@ -24,9 +24,9 @@ $ yarn add -D umi-plugin-swagger-to-mock
 $ npm install -D umi-plugin-swagger-to-mock
 
 # 非umi项目安装
-$ yarn add -D umi-plugin-swagger-to-mock umi-swagger-server
+$ yarn add -D umi-swagger-server
 # or
-$ npm install -D umi-plugin-swagger-to-mock umi-swagger-server
+$ npm install -D umi-swagger-server
 
 # umi项目启动
 $ PORT=8001 umi dev
