@@ -1,6 +1,6 @@
 {
 	"name": "umi-plugin-swagger-to-mock",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"description": "swagger 文档一健转 umi mock 服务 (swagger docs transform to umi mock server)",
 	"main": "lib/index.js",
 	"bin": {
@@ -33,10 +33,10 @@
 		]
 	},
 	"dependencies": {
-		"globby": "7.1.1",
-		"mustache": "3.0.1",
-		"mockjs": "^1.0.1-beta3",
 		"chokidar": "2.0.4",
+		"globby": "7.1.1",
+		"mockjs": "^1.0.1-beta3",
+		"mustache": "3.0.1",
 		"swagger-parser-mock": "^1.1.2"
 	}
 }
