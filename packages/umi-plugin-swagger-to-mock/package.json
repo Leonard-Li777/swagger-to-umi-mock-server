@@ -13,7 +13,7 @@
 	"keywords": [
 		"swagger",
 		"mock",
-		"umi-mock-server",
+		"umi-swagger-server",
 		"umi-plugin-swagger-to-mock"
 	],
 	"author": "seaeye <seaeye777@qq.com> (https://github.com/Leonard-Li777)",

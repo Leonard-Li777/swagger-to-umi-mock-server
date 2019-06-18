@@ -37,7 +37,7 @@ const port = process.env.PORT || 8001;
 const ip = getNetworkAddress();
 const networkAddress = `http://${ip}:${port}`;
 
-export default function(
+module.exports = function(
   api,
   {
     swaggerOutputPath,
@@ -49,6 +49,7 @@ export default function(
   } = {},
 ) {
   const { cwd } = api;
+  const absSwaggerOutputPath = swaggerOutputPath || `${cwd}/src/shared/api`;
   const absSwaggerPath = swaggerPath || `${cwd}/swagger`;
   const jsonPath = `${absSwaggerPath}/json`;
   const overridePath = `${absSwaggerPath}/override`;
@@ -85,7 +86,7 @@ export default function(
           cwd,
           source,
           absSwaggerPath,
-          swaggerOutputPath,
+          absSwaggerOutputPath,
           apiKeyRename,
           apiPathToMockPath,
           formatData,
@@ -96,4 +97,4 @@ export default function(
     console.log(overridePath);
     console.log(jsonPath);
   });
-}
+};

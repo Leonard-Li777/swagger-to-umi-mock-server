@@ -1,9 +1,11 @@
 /* eslint-disable */
 // umi-plugin-swagger-to-mock:
-// this file shared mock-server between webpack
-const mock = require('./mock')
+// This file is shared between webpack and the umi mock server
+
 const apiMap = require('./apiMap')
-const apiRename = require('./apiRename')
+const apiRename = {{#apiRename}}require('./apiRename'){{/apiRename}}{{^apiRename}}{} // require('./apiRename'){{/apiRename}}
+const mock = {{#mock}}require('./mock'){{/mock}}{{^mock}}{} // require('./mock'){{/mock}}
+
 
 function path2mockDefault(path) {
 	return `/mock/${path.replace(/^\//, '')}`

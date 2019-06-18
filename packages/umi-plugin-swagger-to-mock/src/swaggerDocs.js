@@ -6,7 +6,7 @@ const Mustache = require('mustache');
 
 const docs = require('./swagger');
 
-const api = async ({ cwd, source, swaggerOutputPath, absSwaggerPath, formatData }) => {
+const api = async ({ cwd, source, absSwaggerOutputPath, absSwaggerPath, formatData }) => {
   const override = globby
     .sync(`${absSwaggerPath}/override/`, {
       expandDirectories: {
@@ -19,7 +19,7 @@ const api = async ({ cwd, source, swaggerOutputPath, absSwaggerPath, formatData 
     })
     .reduce((ret, item) => ({ ...ret, ...item }), {});
 
-  const apiRename = `${swaggerOutputPath}/apiRename.js`;
+  const apiRename = `${absSwaggerOutputPath}/apiRename.js`;
   let apiKeyRename = {};
   if (fs.existsSync(apiRename)) {
     delete require.cache[require.resolve(apiRename)];
@@ -54,7 +54,7 @@ const api = async ({ cwd, source, swaggerOutputPath, absSwaggerPath, formatData 
   );
   const swaggerApiFileData = `/* eslint-disable */
 const createRes = require('umi-plugin-swagger-to-mock/lib/createRes')
-const api = require('${swaggerOutputPath}/index.js')
+const api = require('${absSwaggerOutputPath}/index.js')
 
 module.exports = {
   ${apiItem.swaggerApi}
@@ -71,15 +71,17 @@ ${apiItem.keyList}
 ]`;
   fs.writeFileSync(`${cwd}/mock/swagger.js`, swaggerApiFileData, 'utf-8');
 
-  fs.writeFileSync(`${swaggerOutputPath}/apiMap.js`, keyPathMapFileData, 'utf-8');
+  fs.writeFileSync(`${absSwaggerOutputPath}/apiMap.js`, keyPathMapFileData, 'utf-8');
 
-  fs.writeFileSync(`${swaggerOutputPath}/apiList.js`, keyListFileData, 'utf-8');
+  fs.writeFileSync(`${absSwaggerOutputPath}/apiList.js`, keyListFileData, 'utf-8');
 
   const indexTpl = fs.readFileSync(join(__dirname, '../template/index.js.tpl'), 'utf-8');
   const indexContent = Mustache.render(indexTpl, {
-    apiPathToMockPath: fs.existsSync(`${swaggerOutputPath}/apiPathToMockPath.js`),
+    apiPathToMockPath: fs.existsSync(`${absSwaggerOutputPath}/apiPathToMockPath.js`),
+    apiRename: fs.existsSync(`${absSwaggerOutputPath}/apiRename.js`),
+    mock: fs.existsSync(`${absSwaggerOutputPath}/mock.js`),
   });
-  const index = `${swaggerOutputPath}/index.js`;
+  const index = `${absSwaggerOutputPath}/index.js`;
   fs.writeFileSync(index, indexContent, 'utf-8');
 };
 

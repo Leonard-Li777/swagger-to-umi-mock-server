@@ -4,6 +4,8 @@ const { existsSync } = require('fs');
 const { join } = require('path');
 const chalk = require('chalk');
 const yParser = require('yargs-parser');
+const swaggerToMock = require('umi-plugin-swagger-to-mock');
+const identity = i => i;
 
 // print version and @local
 const args = yParser(process.argv.slice(2));
@@ -31,12 +33,21 @@ const os = require('os');
 const port = process.env.PORT || 8001;
 const cwd = process.cwd();
 
-// 获取 config 之前先注册一遍
-registerBabel();
-
 const config = getUserConfig.default({ cwd });
 const paths = getPaths.default({ cwd, config });
 
+const api = {
+  cwd,
+  addMiddlewareAhead: function(md) {
+    this.md = md;
+  },
+  afterDevServer: function(start) {
+    this.start = start;
+  },
+};
+swaggerToMock(api, config.plugins[0][1]);
+// 获取 config 之前先注册一遍
+registerBabel();
 const app = express();
 
 // Gzip support
@@ -52,7 +63,6 @@ app.use(
     },
   }),
 );
-console.log(config, paths);
 
 app.use(
   require('umi-mock').createMiddleware({
@@ -67,22 +77,25 @@ app.use(
     },
   }),
 );
-app.use(require('serve-static')('dist'));
+app.use(api.md());
 app.listen(port, () => {
   const ip = getNetworkAddress();
   const localAddress = `http://localhost:${port}`;
   const networkAddress = `http://${ip}:${port}`;
   const message = [
-    chalk.green('Serving your umi project!'),
+    chalk.green('Mock Server is start !'),
     '',
     `${chalk.bold(`- Local:`)}            ${localAddress}`,
     `${chalk.bold('- On Your Network:')}  ${networkAddress}`,
     '',
     `${chalk.grey('Copied local address to clipboard!')}`,
+    '',
+    `${chalk.blue('https://github.com/Leonard-Li777/swagger-to-umi-mock-server')}`,
   ];
   if (process.platform !== `linux` || process.env.DISPLAY) {
     clipboardy.writeSync(localAddress);
   }
+  api.start();
   console.log(
     boxen(message.join('\n'), {
       padding: 1,

@@ -1,68 +1,169 @@
-[English](./README.md) | 简体中文
-
 # swagger-to-umi-mock-server
 
-swagger 文档一健转 umi mock 服务 (swagger docs transform to umi mock server)
+swagger 文档一健转 umi mock 服务
 
-[![NPM version](https://img.shields.io/npm/v/umi.svg?style=flat)](https://npmjs.org/package/umi) [![Build Status](https://img.shields.io/travis/umijs/umi.svg?style=flat)](https://travis-ci.org/umijs/umi) [![NPM downloads](http://img.shields.io/npm/dm/umi.svg?style=flat)](https://npmjs.org/package/umi)
-
-🌋 可插拔的企业级 react 应用框架。
-
-> Please consider following this project's author, [sorrycc](https://github.com/sorrycc), and consider starring the project to show your ❤️ and support.
+> Please consider following this project's author, [seaeye](https://github.com/Leonard-Li777), and consider starring the project to show your ❤️ and support.
 
 ---
 
 ## 特性
 
-- 📦 **开箱即用**，内置 react、react-router、jest、webpack、rollup 等
-- 🏈 **类 next.js 且[功能完备](https://umijs.org/zh/guide/router.html)的路由约定**，同时支持配置的路由方式
-- 🎉 **插件体系**，覆盖从源码到构建产物的所有生命周期
-- 🚀 **高性能**，比如可通过插件支持 PWA、以路由为单元的 code splitting 等
-- 💈 **支持静态页面导出**，用于适配无服务端的环境
-- 🚄 **开发启动快**，包含支持一键开启 [dll](https://umijs.org/zh/plugin/umi-plugin-react.html#dll) 等
-- 🐠 **一键补丁方案**，通过 [targets](https://umijs.org/zh/config/#targets) 配置实现 JS 和 CSS 的自动补丁，最低可到 IE9
-- 🍁 **支持 TypeScript**，包含 umi API 的 d.ts 定义，测试方案，组件打包方案等
-- 🌴 **深入集成 [dva](https://github.com/dvajs/dva) 数据流方案但不耦合**，支持 duck directory、约定式的 model 挂载、model 的 动态加载等
-- ⛄️ **支持多页应用**，基于 [umi-plugin-mpa](https://github.com/umijs/umi-plugin-mpa)
-
-[以及更多。](https://www.npmjs.com/search?q=umi-plugin)
+- 📦 **开箱即用**，umi 项目使用插件 umi-plugin-swagger-to-mock，非 umi 项目使用本项目提供的 umi-swagger-server，
+- 🏈 **支持 swagger json 多来源**，可通过配置指定本地文件，也支持线上文件
+- 🎉 **数据格式可定制**，可指定数据输出格式化
+- 🚀 **支持 mock api 和线上 api 热切换**，通过配置 mock.js 文件提定具体的哪个 api 走 mock 哪个走线上
+- 💈 **支持数据 override**，动态监听 override 目录，此目录里的 js 文件可精确修改指定 api 的返回数据，还可指定返回延迟时间
+- 🐠 **支持 mockjs**，umi 和本插件均支持 mockjs 创建动态数据
 
 ## 快速上手
 
 ```bash
-# 安装
-$ yarn global add umi # 或者 npm install -g umi
+# umi项目安装
+$ yarn add -D umi-plugin-swagger-to-mock
+# or
+$ npm install -D umi-plugin-swagger-to-mock
 
-# 新建应用
-$ mkdir myapp && cd myapp
+# 非umi项目安装
+$ yarn add -D umi-plugin-swagger-to-mock umi-swagger-server
+# or
+$ npm install -D umi-plugin-swagger-to-mock umi-swagger-server
 
-# 新建页面
-$ umi generate page index
+# umi项目启动
+$ PORT=8001 umi dev
 
-# 本地开发
-$ umi dev
+# 非umi项目启动
+$ PORT=8001 umi-swagger-server
 
-# 构建上线
-$ umi build
+# 查看结果
+$ curl -X POST http://localhost:8001/mock/store/order
+
 ```
 
-[10 分钟入门 umi 视频版](https://youtu.be/vkAUGUlYm24)
+# 项目目录结构
+
+```bash
+.
+├── mock
+│   ├── api.js // 普通umi mock文件
+│   └── swagger.js // umi-plugin-swagger-to-mock 动态生成的mock文件
+├── node_modules
+├── package.json
+├── src
+│   ├── shared
+│   │   └── api
+│   │       ├── apiList.js // 动态生成的 api key 列表
+│   │       ├── apiMap.js // 动态生成的 api key -> api路径列表
+│   │       ├── apiPathToMockPath.js  // 用户自定义函数用于转换直实路径到mock路径
+│   │       ├── apiRename.js // 用户自定义对象用于api重命名
+│   │       ├── index.js // 动态生成，用户在代码中导入，可获得所有api的key到路径的映射
+│   │       └── mock.js // 用户自定义mock文件，可以提定哪些api走mock路径
+│   └── you-business-code.js
+└── swagger
+    ├── json // 分别为需要解析的swagger json文件,会动态遍历此目录
+    │   ├── swagger.java.json
+    │   └── swagger.net.json
+    └── override // 你需要复写的api数据文件,会动态遍历此目录
+        ├── alipay.js
+        ├── home.js
+        └── team.js
+```
+
+- api.js [使用 umi 的 mock 功能](https://umijs.org/zh/guide/mock-data.html#%E4%BD%BF%E7%94%A8-umi-%E7%9A%84-mock-%E5%8A%9F%E8%83%BD) apiPathToMockPath.js 用户自定义函数用于转换直实路径到 mock 路径，一般用于代理识别和调试实别，可省略，默认值
+
+```javascript
+function path2mockDefault(path) {
+  return `/mock/${path.replace(/^\//, '')}`;
+}
+```
+
+- apiMap.js 动态生成的 key-path 映射文件
+
+```javascript
+{
+ list: '/queries/third/asset/list',
+ list: '/queries/client/app/list',
+ checkstand: '/queries/client/checkstand',
+ ...
+}
+```
+
+- apiRename.js 用户自定义对象用于 api 重命名，因为来自 swagger json 的 api key，都取自 api 路径的最末尾，可能存在重复，如上面 apiMap.js 文件的 list key 重复，需要通过 apiRename.js 重命名
+
+```javascript
+module.exports = {
+  appList: '/queries/client/app/list',
+};
+```
+
+- mock.js 用户自定义 mock 文件，可以指定哪些 api 走 mock 路径, 来源参考动态更新的 ./apiList.js
+
+```javascript
+const { uniq } = require('lodash');
+module.exports = uniq([
+  //'list', 注释掉指定API，将走线上
+  'appList', // 此API会走Mock服务器
+  'checkstand', // 此API会走Mock服务器
+]);
+```
+
+- index.js 动态生成，用户在代码中导入，可获得所有 api 的 key 到真实路径或 mock 路径的映射
+
+```javascript
+import api from 'shared/api'
+console.log(api)
+-------------------
+=> {
+ list: '/queries/third/asset/list',
+ appList: '/queries/client/app/list',
+ checkstand: '/mock/queries/client/checkstand',
+ ...
+}
+```
+
+# 配置.umirc.js
+
+在项目根目录创建.umirc.js 文件
+
+```javascript
+const path = require('path')
+module.exports = {
+	plugins: [
+		[
+			'umi-plugin-swagger-to-mock',
+			{
+				swaggerOutputPath: path.join(__dirname, 'src/shared/api'), // 可省略默认为src/shared/api
+				 // swaggerPath 此目录包含两个子目录json 和 override
+				swaggerPath: path.join(__dirname, 'swagger'), // 可省略默认为swagger
+				swaggerDocs: [ // 可省略默认为swagger/json目录下所有json文件
+					{ source: 'http://petstore.swagger.io/v2/swagger.json', dataNode: 'default' }, // dataNode 为swagger文档存放数据的节点，一般取值: default | 200
+					{ source: 'swagger.net.json', dataNode: '200' }, // 想要提定swagger/json/swagger.net.json的dataNode为 200
+				],
+				formatData: (data, { source, dataNode, path }) => { // 可省略，默认转换为{code: 200, message: '成功', data}
+					...
+					return {
+							code: 200,
+							message: '成功',
+							data,
+						}
+				},
+			},
+		],
+	]
+}
+```
+
+最后请将下列文件添加到.gitignore
+
+```bash
+src/shared/api/apiList.js
+src/shared/api/index.js
+mock/swagger.js
+```
 
 ## 例子
 
-- [Ant Design Pro](https://github.com/ant-design/ant-design-pro)
-- [Antd Admin](https://github.com/zuiidea/antd-admin)
-
-## Contributors
-
-This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)]. <a href="https://github.com/umijs/umi/graphs/contributors"><img src="https://opencollective.com/umi/contributors.svg?width=890&button=false" /></a>
-
-## 社区
-
-| Slack Group                                                                                                                                                                     | Github Issue                                            | 钉钉群                                                                                       | 微信群                                                                                      |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| [sorrycc.slack.com](https://join.slack.com/t/sorrycc/shared_invite/enQtNTUzMTYxNDQ5MzE4LTg1NjEzYWUwNDQzMWU3YjViYjcyM2RkZDdjMzE0NzIxMTg3MzIwMDM2YjUwNTZkNDdhNTY5ZTlhYzc1Nzk2NzI) | [umijs/umi/issues](https://github.com/umijs/umi/issues) | <img src="https://gw.alipayobjects.com/zos/rmsportal/jPXcQOlGLnylGMfrKdBz.jpg" width="60" /> | <img src="https://img.alicdn.com/tfs/TB13U6aF6DpK1RjSZFrXXa78VXa-752-974.jpg" width="60" /> |
+- 请参照本项目[example](https://github.com/Leonard-Li777/swagger-to-umi-mock-server/tree/master/example)目录
 
 ## License
 
-[MIT](https://github.com/umijs/umi/blob/master/LICENSE)
+[MIT](./LICENSE)

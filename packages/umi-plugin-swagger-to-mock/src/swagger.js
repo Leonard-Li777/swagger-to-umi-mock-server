@@ -17,11 +17,11 @@ module.exports = (source, formatData = formatData) =>
           method,
           {
             summary,
-            responses: { [dataNode]: { example } = {} },
+            responses: { [dataNode]: { example: dataNodeExample } = {}, default: { example } = {} },
           },
         ] = Object.entries(docs.paths[path])[0];
 
-        let data = example ? JSON.parse(example) : example;
+        let data = JSON.parse(dataNodeExample || example || '{}');
         data = formatData(data, { dataNode, source, path });
 
         return {
