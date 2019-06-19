@@ -27,7 +27,8 @@
  ],
  "scripts": {
   "bootstrap": "lerna bootstrap",
-  "build": "father build --watch",
+  "build": "father build",
+  "build:watch": "father build --watch",
   "changelog": "lerna-changelog",
   "chore:update-deps": "./scripts/update_deps.sh",
   "chore:reinstall_deps": "./scripts/reinstall_deps.sh",

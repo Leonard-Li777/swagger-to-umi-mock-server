@@ -1,10 +1,13 @@
 {
-  "printWidth": 100,
-  "singleQuote": true,
-  "trailingComma": "all",
-  "proseWrap": "never",
-  "overrides": [
-    { "files": ".webpackrc", "options": { "parser": "json" } },
-    { "files": ".prettierrc", "options": { "parser": "json" } }
-  ]
+  printWidth: 80,
+  tabWidth: 2,
+  singleQuote: true,
+  trailingComma: 'all',
+  bracketSpacing: true,
+  semi: false,
+  useTabs: false,
+  jsxBracketSameLine: true,
+  proseWrap: 'preserve',
+  arrowParens: 'avoid',
+  jsxSingleQuote: true
 }

@@ -23,6 +23,7 @@
 	},
 	"homepage": "https://github.com/Leonard-Li777/swagger-to-umi-mock-server",
 	"files": [
+		"template",
 		"lib",
 		"src"
 	],

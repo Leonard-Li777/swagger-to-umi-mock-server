@@ -1,8 +1,7 @@
 # swagger-to-umi-mock-server
 
-swagger 文档一健转 umi mock 服务
-
-> Please consider following this project's author, [seaeye](https://github.com/Leonard-Li777), and consider starring the project to show your ❤️ and support.
+Swagger 文档一健转 [umi mock 服务](https://umijs.org/zh/guide/mock-data.html#%E4%BD%BF%E7%94%A8-umi-%E7%9A%84-mock-%E5%8A%9F%E8%83%BD)
+—— by [北森前端团队 beisen.com](https://www.beisen.com/)
 
 ---
 
@@ -11,17 +10,17 @@ swagger 文档一健转 umi mock 服务
 - 📦 **开箱即用**，umi 项目使用插件 umi-plugin-swagger-to-mock，非 umi 项目使用本项目提供的 umi-swagger-server，
 - 🏈 **支持 swagger json 多来源**，可通过配置指定本地文件，也支持线上文件
 - 🎉 **数据格式可定制**，可指定数据输出格式化
-- 🚀 **支持 mock api 和线上 api 热切换**，通过配置 mock.js 文件提定具体的哪个 api 走 mock 哪个走线上
-- 💈 **支持数据 override**，动态监听 override 目录，此目录里的 js 文件可精确修改指定 api 的返回数据，还可指定返回延迟时间
+- 🚀 **支持 mock api 和线上 api 热切换**，通过配置 mock.js 文件提定具体的哪个 api 走 mock，哪个走线上
+- 💈 **支持数据 override**，动态监听 override 目录，此目录里的 js 文件可精确 merge 指定 api 的返回数据，还可指定返回延迟时间
 - 🐠 **支持 mockjs**，umi 和本插件均支持 mockjs 创建动态数据
 
 ## 快速上手
 
 ```bash
 # umi项目安装
-$ yarn add -D umi-plugin-swagger-to-mock
+$ yarn add -D umi umi-plugin-swagger-to-mock
 # or
-$ npm install -D umi-plugin-swagger-to-mock
+$ npm install -D umi umi-plugin-swagger-to-mock
 
 # 非umi项目安装
 $ yarn add -D umi-swagger-server
@@ -44,7 +43,7 @@ $ curl -X POST http://localhost:8001/mock/store/order
 ```bash
 .
 ├── mock
-│   ├── api.js // 普通umi mock文件
+│   ├── api.js // 普通umi mock文件，可省略
 │   └── swagger.js // umi-plugin-swagger-to-mock 动态生成的mock文件
 ├── node_modules
 ├── package.json
@@ -62,11 +61,13 @@ $ curl -X POST http://localhost:8001/mock/store/order
     ├── json // 分别为需要解析的swagger json文件,会动态遍历此目录
     │   ├── swagger.java.json
     │   └── swagger.net.json
-    └── override // 你需要复写的api数据文件,会动态遍历此目录
+    └── override // 你需要复写的api数据文件,会动态遍历此目录，同步更新mock/swagger.js
         ├── alipay.js
         ├── home.js
         └── team.js
 ```
+
+# 文件详细说明
 
 - api.js [使用 umi 的 mock 功能](https://umijs.org/zh/guide/mock-data.html#%E4%BD%BF%E7%94%A8-umi-%E7%9A%84-mock-%E5%8A%9F%E8%83%BD)
 
@@ -74,7 +75,7 @@ $ curl -X POST http://localhost:8001/mock/store/order
 
 ```javascript
 function path2mockDefault(path) {
-  return `/mock/${path.replace(/^\//, '')}`;
+  return `/mock/${path.replace(/^\//, '')}`
 }
 ```
 
@@ -94,18 +95,18 @@ function path2mockDefault(path) {
 ```javascript
 module.exports = {
   appList: '/queries/client/app/list',
-};
+}
 ```
 
 - mock.js 用户自定义 mock 文件，可以指定哪些 api 走 mock 路径, 来源参考动态更新的 ./apiList.js
 
 ```javascript
-const { uniq } = require('lodash');
+const { uniq } = require('lodash')
 module.exports = uniq([
   //'list', 注释掉指定API，将走线上
   'appList', // 此API会走Mock服务器
   'checkstand', // 此API会走Mock服务器
-]);
+])
 ```
 
 - index.js 动态生成，用户在代码中导入，可获得所有 api 的 key 到真实路径或 mock 路径的映射
@@ -129,28 +130,27 @@ console.log(api)
 ```javascript
 const path = require('path')
 module.exports = {
-	plugins: [
-		[
-			'umi-plugin-swagger-to-mock',
-			{
-				swaggerOutputPath: path.join(__dirname, 'src/shared/api'), // 可省略默认为src/shared/api
-				 // swaggerPath 此目录包含两个子目录json 和 override
-				swaggerPath: path.join(__dirname, 'swagger'), // 可省略默认为swagger
-				swaggerDocs: [ // 可省略默认为swagger/json目录下所有json文件
-					{ source: 'http://petstore.swagger.io/v2/swagger.json', dataNode: 'default' }, // dataNode 为swagger文档存放数据的节点，一般取值: default | 200
-					{ source: 'swagger.net.json', dataNode: '200' }, // 想要提定swagger/json/swagger.net.json的dataNode为 200
-				],
-				formatData: (data, { source, dataNode, path }) => { // 可省略，默认转换为{code: 200, message: '成功', data}
-					...
-					return {
-							code: 200,
-							message: '成功',
-							data,
-						}
-				},
-			},
-		],
-	]
+ plugins: [
+  [
+   'umi-plugin-swagger-to-mock',
+   {
+    swaggerOutputPath: path.join(__dirname, 'src/shared/api'), // 可省略默认为src/shared/api
+    swaggerPath: path.join(__dirname, 'swagger'), // 可省略，默认为swagger, 此目录须包含两个子目录json 和 override
+    swaggerDocs: [ // 可省略，默认为swagger/json目录下所有json文件
+    { source: 'http://petstore.swagger.io/v2/swagger.json', dataNode: 'default' }, //   dataNode 为swagger文档存放数据的节点，一般取值: default | 200
+    { source: 'swagger.net.json', dataNode: '200' }, // 想要指定swagger/json/  swagger.net.json的dataNode为 200
+   	],
+    formatData: (data, { source, dataNode, path }) => { // 可省略，默认转换为{code: 200,   message: '成功', data}
+     ...
+     return {
+      code: 200,
+      message: '成功',
+      data,
+      }
+     },
+    },
+  ],
+ ]
 }
 ```
 
