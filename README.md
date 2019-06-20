@@ -11,7 +11,7 @@ Swagger 文档一健转 [umi mock 服务](https://umijs.org/zh/guide/mock-data.h
 - 🏈 **支持 swagger json 多来源**，可通过配置指定本地文件，也支持线上文件
 - 🎉 **数据格式可定制**，可指定数据输出格式化
 - 🚀 **支持 mock api 和线上 api 热切换**，通过配置 mock.js 文件提定具体的哪个 api 走 mock，哪个走线上
-- 💈 **支持数据 override**，动态监听 override 目录，此目录里的 js 文件可精确 merge 指定 api 的返回数据，还可指定返回延迟时间
+- 💈 **支持数据 override**，动态监听 override 目录，此目录里的 js 文件可精确将你的数据 merge 到指定 api 的返回数据，还可指定返回延迟时间
 - 🐠 **支持 mockjs**，umi 和本插件均支持 mockjs 创建动态数据
 
 ## 快速上手
@@ -27,10 +27,10 @@ $ yarn add -D umi-swagger-server
 # or
 $ npm install -D umi-swagger-server
 
-# umi项目启动
+# umi项目启动(npm script)
 $ PORT=8001 umi dev
 
-# 非umi项目启动
+# 非umi项目启动(npm script)
 $ PORT=8001 umi-swagger-server
 
 # 查看结果
@@ -74,7 +74,7 @@ $ curl -X POST http://localhost:8001/mock/store/order
 - apiPathToMockPath.js 用户自定义函数用于转换直实路径到 mock 路径，一般用于代理识别和调试实别，可省略，默认值
 
 ```javascript
-function path2mockDefault(path) {
+module.exports = function(path) {
   return `/mock/${path.replace(/^\//, '')}`
 }
 ```
@@ -113,11 +113,16 @@ module.exports = uniq([
 
 ```javascript
 import api from 'shared/api'
+
+fetch(api.list, { method: 'POST' }).then(response => {...}) // 请求线上api
+fetch(api.appList).then(response => {...}) // 请求mock api
+fetch(api.checkstand, { method: 'POST' }).then(response => {...}) // 请求mock api
+
 console.log(api)
 -------------------
 => {
  list: '/queries/third/asset/list',
- appList: '/queries/client/app/list',
+ appList: '/mock/queries/client/app/list',
  checkstand: '/mock/queries/client/checkstand',
  ...
 }
@@ -160,6 +165,12 @@ module.exports = {
 src/shared/api/apiList.js
 src/shared/api/index.js
 mock/swagger.js
+```
+
+将下列文件添加到.eslintignore
+
+```bash
+src/shared/api/index.js
 ```
 
 ## 例子

@@ -1,12 +1,12 @@
-const swaggerParserMock = require('swagger-parser-mock');
+const swaggerParserMock = require('swagger-parser-mock')
 
 const formatData = data => {
   return {
     code: 200,
     message: '成功',
     data,
-  };
-};
+  }
+}
 
 module.exports = (source, formatData = formatData) =>
   source.map(async ({ dataNode = 'default', source }) => {
@@ -17,20 +17,24 @@ module.exports = (source, formatData = formatData) =>
           method,
           {
             summary,
-            responses: { [dataNode]: { example: dataNodeExample } = {}, default: { example } = {} },
+            responses: {
+              [dataNode]: { example: exampleDataNode } = {},
+              default: { example } = {},
+              200: { example: example200 } = {},
+            },
           },
-        ] = Object.entries(docs.paths[path])[0];
+        ] = Object.entries(docs.paths[path])[0]
 
-        let data = JSON.parse(dataNodeExample || example || '{}');
-        data = formatData(data, { dataNode, source, path });
+        let data = JSON.parse(exampleDataNode || example || example200 || '{}')
+        data = formatData(data, { dataNode, source, path })
 
         return {
           path,
           method,
           summary,
           data,
-        };
+        }
       }),
-    );
-    return docs;
-  });
+    )
+    return docs
+  })

@@ -45,6 +45,9 @@ const api = {
   afterDevServer: function(start) {
     this.start = start
   },
+  onDevCompileDone: function(done) {
+    this.done = done
+  },
 }
 swaggerToMock(api, config.plugins[0][1])
 // 获取 config 之前先注册一遍
@@ -84,16 +87,12 @@ app.listen(port, () => {
   const localAddress = `http://localhost:${port}`
   const networkAddress = `http://${ip}:${port}`
   const message = [
-    chalk.green('Mock Server is start !'),
+    chalk.green('Swagger Mock Server is start !'),
     '',
     `${chalk.bold(`- Local:`)}            ${localAddress}`,
     `${chalk.bold('- On Your Network:')}  ${networkAddress}`,
     '',
     `${chalk.grey('Copied local address to clipboard!')}`,
-    '',
-    `${chalk.blue(
-      'https://github.com/Leonard-Li777/swagger-to-umi-mock-server',
-    )}`,
   ]
   if (process.platform !== `linux` || process.env.DISPLAY) {
     clipboardy.writeSync(localAddress)
@@ -106,6 +105,7 @@ app.listen(port, () => {
       margin: 1,
     }),
   )
+  api.done()
 })
 
 function registerBabel(extraFiles = []) {

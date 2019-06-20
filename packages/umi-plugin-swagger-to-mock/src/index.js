@@ -1,41 +1,43 @@
-const { uniqBy, debounce } = require('lodash');
-const chokidar = require('chokidar');
-const globby = require('globby');
-const os = require('os');
-const path = require('path');
+const { uniqBy, debounce } = require('lodash')
+const chokidar = require('chokidar')
+const globby = require('globby')
+const os = require('os')
+const path = require('path')
 
-const createSwaggerDocs = require('./swaggerDocs');
+const createSwaggerDocs = require('./swaggerDocs')
 
 function path2mock(path) {
-  return `/mock/${path.replace(/^\//, '')}`;
+  return `/mock/${path.replace(/^\//, '')}`
 }
 function getSwaggerSource(swaggerDocs) {
   if (swaggerDocs) {
     if (typeof swaggerDocs === 'string') {
-      return { source: swaggerDocs, dataNode: 'default' };
+      return { source: swaggerDocs, dataNode: 'default' }
     }
     if (typeof swaggerDocs === 'object') {
       if (/^http/i.test(swaggerDocs.source)) {
-        return swaggerDocs;
+        return swaggerDocs
       }
-      return Object.assign(swaggerDocs, { source: `${networkAddress}/${swaggerDocs.source}` });
+      return Object.assign(swaggerDocs, {
+        source: `${networkAddress}/${swaggerDocs.source}`,
+      })
     }
   }
 }
 function getNetworkAddress() {
-  const interfaces = os.networkInterfaces();
+  const interfaces = os.networkInterfaces()
   for (const name of Object.keys(interfaces)) {
     for (const osAPI of interfaces[name]) {
-      const { address, family, internal } = osAPI;
+      const { address, family, internal } = osAPI
       if (family === 'IPv4' && !internal) {
-        return address || 'localhost';
+        return address || 'localhost'
       }
     }
   }
 }
-const port = process.env.PORT || 8001;
-const ip = getNetworkAddress();
-const networkAddress = `http://${ip}:${port}`;
+const port = process.env.PORT || 8001
+const ip = getNetworkAddress()
+const networkAddress = `http://${ip}:${port}`
 
 module.exports = function(
   api,
@@ -48,53 +50,84 @@ module.exports = function(
     formatData,
   } = {},
 ) {
-  const { cwd } = api;
-  const absSwaggerOutputPath = swaggerOutputPath || `${cwd}/src/shared/api`;
-  const absSwaggerPath = swaggerPath || `${cwd}/swagger`;
-  const jsonPath = `${absSwaggerPath}/json`;
-  const overridePath = `${absSwaggerPath}/override`;
+  if (process.env.NODE_ENV === 'production') return
 
-  let source = [];
+  const { cwd } = api
+  const absSwaggerOutputPath = swaggerOutputPath || `${cwd}/src/shared/api`
+  const absSwaggerPath = swaggerPath || `${cwd}/swagger`
+  const jsonPath = `${absSwaggerPath}/json`
+  const overridePath = `${absSwaggerPath}/override`
+  let mergeLog = []
+  let source = []
   if (swaggerDocs instanceof Array) {
-    source = source.concat(swaggerDocs.map(docs => getSwaggerSource(docs)));
+    source = source.concat(swaggerDocs.map(docs => getSwaggerSource(docs)))
   } else {
-    source.push(getSwaggerSource(swaggerDocs));
+    source.push(getSwaggerSource(swaggerDocs))
   }
 
   let sourceLocal = globby.sync(jsonPath, {
     expandDirectories: {
       extensions: ['json'],
     },
-  });
+  })
 
   sourceLocal = sourceLocal.map(json => {
-    const source = path.basename(json);
-    return getSwaggerSource({ source, dataNode: 'default' });
-  });
+    const source = path.basename(json)
+    return getSwaggerSource({ source, dataNode: 'default' })
+  })
 
-  source = uniqBy(source.concat(sourceLocal), 'source');
+  source = uniqBy(source.concat(sourceLocal), 'source')
+  if (source.length) {
+    console.log('Swagger json from:')
+    source.forEach(({ source }) => console.log(source))
+    console.log('')
+  } else {
+    console.log(
+      `You should config swagger json source \'swaggerDocs\' in .umirc.js,
+see: https://github.com/Leonard-Li777/swagger-to-umi-mock-server`,
+    )
+  }
+  api.addMiddlewareAhead(() => require('serve-static')(jsonPath))
 
-  api.addMiddlewareAhead(() => require('serve-static')(jsonPath));
-
-  api.afterDevServer(opts => {
-    console.log('-----Start watching the following directories for swagger api build!------');
-    const watcher = chokidar.watch([overridePath, jsonPath]);
+  api.afterDevServer(() => {
+    const watcher = chokidar.watch([overridePath, jsonPath])
     watcher.on(
       'all',
       debounce(
-        createSwaggerDocs.bind(null, {
-          cwd,
-          source,
-          absSwaggerPath,
-          absSwaggerOutputPath,
-          apiKeyRename,
-          apiPathToMockPath,
-          formatData,
-        }),
+        () =>
+          source.length
+            ? createSwaggerDocs({
+                cwd,
+                source,
+                absSwaggerPath,
+                absSwaggerOutputPath,
+                apiKeyRename,
+                apiPathToMockPath,
+                formatData,
+              }).then(log => {
+                mergeLog = log
+              })
+            : console.log(
+                `You should config swagger json source \'swaggerDocs\' in .umirc.js,
+see: https://github.com/Leonard-Li777/swagger-to-umi-mock-server`,
+              ),
         100,
       ),
-    );
-    console.log(overridePath);
-    console.log(jsonPath);
-  });
-};
+    )
+  })
+  api.onDevCompileDone(() => {
+    console.log(
+      '-----Start watching the following directories for Swagger api build!------',
+    )
+    console.log('')
+    console.log(overridePath)
+    console.log(jsonPath)
+    console.log('')
+    if (mergeLog.length) {
+      console.log('merge data to as follows api key:')
+      console.log(mergeLog.join('\n'))
+      console.log('')
+    }
+    console.log('https://github.com/Leonard-Li777/swagger-to-umi-mock-server')
+  })
+}
