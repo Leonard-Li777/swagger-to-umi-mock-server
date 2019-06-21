@@ -1,6 +1,6 @@
 const { join } = require('path')
 const { merge, cloneDeep, invert } = require('lodash')
-const fs = require('fs')
+const fs = require('fs-extra')
 const globby = require('globby')
 const Mustache = require('mustache')
 
@@ -81,15 +81,15 @@ ${apiItem.keyPathMap}
 module.exports = [
 ${apiItem.keyList}
 ]`
-  fs.writeFileSync(`${cwd}/mock/swagger.js`, swaggerApiFileData, 'utf-8')
+  fs.outputFileSync(`${cwd}/mock/swagger.js`, swaggerApiFileData, 'utf-8')
 
-  fs.writeFileSync(
+  fs.outputFileSync(
     `${absSwaggerOutputPath}/apiMap.js`,
     keyPathMapFileData,
     'utf-8',
   )
 
-  fs.writeFileSync(
+  fs.outputFileSync(
     `${absSwaggerOutputPath}/apiList.js`,
     keyListFileData,
     'utf-8',
@@ -107,7 +107,7 @@ ${apiItem.keyList}
     mock: fs.existsSync(`${absSwaggerOutputPath}/mock.js`),
   })
   const index = `${absSwaggerOutputPath}/index.js`
-  fs.writeFileSync(index, indexContent, 'utf-8')
+  fs.outputFileSync(index, indexContent, 'utf-8')
 
   return log
 }
