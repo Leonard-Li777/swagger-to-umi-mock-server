@@ -135,27 +135,31 @@ console.log(api)
 ```javascript
 const path = require('path')
 module.exports = {
- plugins: [
-  [
-   'umi-plugin-swagger-to-mock',
-   {
-    swaggerOutputPath: path.join(__dirname, 'src/shared/api'), // 可省略默认为src/shared/api
-    swaggerPath: path.join(__dirname, 'swagger'), // 可省略，默认为swagger, 此目录须包含两个子目录json 和 override
-    swaggerDocs: [ // 可省略，默认为swagger/json目录下所有json文件
-    { source: 'http://petstore.swagger.io/v2/swagger.json', dataNode: 'default' }, //   dataNode 为swagger文档存放数据的节点，一般取值: default | 200
-    { source: 'swagger.net.json', dataNode: '200' }, // 想要指定swagger/json/  swagger.net.json的dataNode为 200
-   	],
-    formatData: (data, { source, dataNode, path }) => { // 可省略，默认转换为{code: 200,   message: '成功', data}
-     ...
-     return {
-      code: 200,
-      message: '成功',
-      data,
-      }
-     },
-    },
+  plugins: [
+    [
+      'umi-plugin-swagger-to-mock',
+      {
+        swaggerOutputPath: path.join(__dirname, 'src/shared/api'), // 可省略默认为src/shared/api
+        swaggerPath: path.join(__dirname, 'swagger'), // 可省略，默认为swagger, 此目录须包含两个子目录json 和 override
+        swaggerDocs: [
+          // 可省略，默认为swagger/json目录下所有json文件
+          {
+            source: 'http://petstore.swagger.io/v2/swagger.json',
+            dataNode: 'default',
+          }, //   dataNode 为swagger文档存放数据的节点，一般取值: default | 200
+          { source: 'swagger.net.json', dataNode: '200' }, // 想要指定swagger/json/  swagger.net.json的dataNode为 200
+        ],
+        formatData: (data, { source, dataNode, path }) => {
+          // 可省略，默认转换为{code: 200,   message: '成功', data}
+          return {
+            code: 200,
+            message: '成功',
+            data,
+          }
+        },
+      },
+    ],
   ],
- ]
 }
 ```
 

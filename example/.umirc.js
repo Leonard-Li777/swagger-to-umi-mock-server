@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('path')
 module.exports = {
   plugins: [
     [
@@ -7,31 +7,21 @@ module.exports = {
         swaggerOutputPath: path.join(__dirname, 'src/shared/api'),
         swaggerPath: path.join(__dirname, 'swagger'),
         swaggerDocs: [
-          { source: 'http://swapi.italent-inc.cn/v2/api-docs', dataNode: '200' }, // dataNodeName: default | 200
-          { source: 'swagger.net.json', dataNode: 'default' },
-          //{source:'swagger.java.json', dataNodeName:'200'},
+          {
+            source: 'http://petstore.swagger.io/v2/swagger.json',
+            dataNode: 'default',
+          }, //   dataNode 为swagger文档存放数据的节点，一般取值: default | 200
+          { source: 'swagger.net.json', dataNode: '200' }, // 想要指定swagger/json/  swagger.net.json的dataNode为 200
         ],
-        formatData: (data, { source }) => {
-          const findData = data =>
-            Object.keys(data).reduce((ret, key) => {
-              if (data[key] && data[key].code) {
-                data[key].code = 200;
-                return data[key];
-              }
-            }, {});
-          let result = data;
-          if (/\.net/.test(source)) {
-            result = findData(data);
-          } else {
-            result = {
-              code: 200,
-              message: '成功',
-              data,
-            };
+        formatData: (data, { source, dataNode, path }) => {
+          // 可省略，默认转换为{code: 200,   message: '成功', data}
+          return {
+            code: 200,
+            message: '成功',
+            data,
           }
-          return result;
         },
       },
     ],
   ],
-};
+}
