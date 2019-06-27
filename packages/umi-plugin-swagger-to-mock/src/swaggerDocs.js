@@ -39,7 +39,12 @@ const api = async ({
     ([java, net]) =>
       java.concat(net).reduce(
         (ret, { path, method, summary, data }) => {
-          const key = apiKey[path] || path.split('/').pop()
+          const key =
+            apiKey[path] ||
+            path
+              .split('/')
+              .pop()
+              .replace(/[^a-zA-Z0-9]/g, '')
           const methodKey = `${method.toLowerCase()} \$\{api.${key}\}`
 
           const [overData, overDelay = 0] = override[key] || []

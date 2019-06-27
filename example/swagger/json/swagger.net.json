@@ -6,7 +6,10 @@
     "title": "Swagger Petstore",
     "termsOfService": "http://swagger.io/terms/",
     "contact": { "email": "apiteam@swagger.io" },
-    "license": { "name": "Apache 2.0", "url": "http://www.apache.org/licenses/LICENSE-2.0.html" }
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
   },
   "host": "petstore.swagger.io",
   "basePath": "/v2",
@@ -14,13 +17,19 @@
     {
       "name": "pet",
       "description": "Everything about your Pets",
-      "externalDocs": { "description": "Find out more", "url": "http://swagger.io" }
+      "externalDocs": {
+        "description": "Find out more",
+        "url": "http://swagger.io"
+      }
     },
     { "name": "store", "description": "Access to Petstore orders" },
     {
       "name": "user",
       "description": "Operations about user",
-      "externalDocs": { "description": "Find out more about our store", "url": "http://swagger.io" }
+      "externalDocs": {
+        "description": "Find out more about our store",
+        "url": "http://swagger.io"
+      }
     }
   ],
   "schemes": ["https", "http"],
@@ -94,7 +103,10 @@
         "responses": {
           "200": {
             "description": "successful operation",
-            "schema": { "type": "array", "items": { "$ref": "#/definitions/Pet" } }
+            "schema": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/Pet" }
+            }
           },
           "400": { "description": "Invalid status value" }
         },
@@ -122,7 +134,10 @@
         "responses": {
           "200": {
             "description": "successful operation",
-            "schema": { "type": "array", "items": { "$ref": "#/definitions/Pet" } }
+            "schema": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/Pet" }
+            }
           },
           "400": { "description": "Invalid tag value" }
         },
@@ -198,7 +213,12 @@
         "operationId": "deletePet",
         "produces": ["application/xml", "application/json"],
         "parameters": [
-          { "name": "api_key", "in": "header", "required": false, "type": "string" },
+          {
+            "name": "api_key",
+            "in": "header",
+            "required": false,
+            "type": "string"
+          },
           {
             "name": "petId",
             "in": "path",
@@ -384,7 +404,10 @@
             "name": "body",
             "description": "List of user object",
             "required": true,
-            "schema": { "type": "array", "items": { "$ref": "#/definitions/User" } }
+            "schema": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/User" }
+            }
           }
         ],
         "responses": { "default": { "description": "successful operation" } }
@@ -403,7 +426,10 @@
             "name": "body",
             "description": "List of user object",
             "required": true,
-            "schema": { "type": "array", "items": { "$ref": "#/definitions/User" } }
+            "schema": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/User" }
+            }
           }
         ],
         "responses": { "default": { "description": "successful operation" } }
@@ -543,7 +569,10 @@
       "type": "oauth2",
       "authorizationUrl": "https://petstore.swagger.io/oauth/authorize",
       "flow": "implicit",
-      "scopes": { "write:pets": "modify pets in your account", "read:pets": "read your pets" }
+      "scopes": {
+        "write:pets": "modify pets in your account",
+        "read:pets": "read your pets"
+      }
     },
     "api_key": { "type": "apiKey", "name": "api_key", "in": "header" }
   },
@@ -574,7 +603,11 @@
         "email": { "type": "string" },
         "password": { "type": "string" },
         "phone": { "type": "string" },
-        "userStatus": { "type": "integer", "format": "int32", "description": "User Status" }
+        "userStatus": {
+          "type": "integer",
+          "format": "int32",
+          "description": "User Status"
+        }
       },
       "xml": { "name": "User" }
     },
@@ -628,5 +661,8 @@
       }
     }
   },
-  "externalDocs": { "description": "Find out more about Swagger", "url": "http://swagger.io" }
+  "externalDocs": {
+    "description": "Find out more about Swagger",
+    "url": "http://swagger.io"
+  }
 }
