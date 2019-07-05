@@ -7,7 +7,7 @@ Swagger 文档一健转 [umi mock 服务](https://umijs.org/zh/guide/mock-data.h
 
 ## 特性
 
-- 📦 **开箱即用**，umi 项目使用插件 umi-plugin-swagger-to-mock，非 umi 项目使用本项目提供的 umi-swagger-server，
+- 📦 **开箱即用**，umi 项目使用插件 umi-plugin-swagger-to-mock，非 umi 项目使用本项目提供的 umi-swagger-server 独立运行
 - 🏈 **支持 swagger json 多来源**，可通过配置指定本地文件，也支持线上文件
 - 🎉 **数据格式可定制**，可指定数据输出格式化
 - 🚀 **支持 mock api 和线上 api 热切换**，通过配置 mock.js 文件提定具体的哪个 api 走 mock，哪个走线上
@@ -69,9 +69,9 @@ $ curl -X POST http://localhost:8001/mock/store/order
 
 # 文件详细说明
 
-- api.js [使用 umi 的 mock 功能](https://umijs.org/zh/guide/mock-data.html#%E4%BD%BF%E7%94%A8-umi-%E7%9A%84-mock-%E5%8A%9F%E8%83%BD)
+- src/shared/api.js [使用 umi 的 mock 功能](https://umijs.org/zh/guide/mock-data.html#%E4%BD%BF%E7%94%A8-umi-%E7%9A%84-mock-%E5%8A%9F%E8%83%BD)
 
-- apiPathToMockPath.js 用户自定义函数用于转换直实路径到 mock 路径，一般用于代理识别和调试实别，可省略，默认值
+- src/shared/apiPathToMockPath.js 用户自定义函数用于转换直实路径到 mock 路径，一般用于代理识别和调试实别，可省略，默认值
 
 ```javascript
 module.exports = function(path) {
@@ -79,7 +79,7 @@ module.exports = function(path) {
 }
 ```
 
-- apiMap.js 动态生成的 key-path 映射文件
+- src/shared/apiMap.js 动态生成的 key-path 映射文件
 
 ```javascript
 {
@@ -90,7 +90,7 @@ module.exports = function(path) {
 }
 ```
 
-- apiRename.js 用户自定义对象用于 api 重命名，因为来自 swagger json 的 api key，都取自 api 路径的最末尾，可能存在重复，如上面 apiMap.js 文件的 list key 重复，需要通过 apiRename.js 重命名
+- src/shared/apiRename.js 用户自定义对象用于 api 重命名，因为来自 swagger json 的 api key，都取自 api 路径的最末尾，可能存在重复，如上面 apiMap.js 文件的 list key 重复，需要通过 apiRename.js 重命名
 
 ```javascript
 module.exports = {
@@ -98,7 +98,7 @@ module.exports = {
 }
 ```
 
-- mock.js 用户自定义 mock 文件，可以指定哪些 api 走 mock 路径, 来源参考动态更新的 ./apiList.js
+- src/shared/mock.js 用户自定义 mock 文件，可以指定哪些 api 走 mock 路径, 来源参考动态更新的 ./apiList.js
 
 ```javascript
 const { uniq } = require('lodash')
@@ -109,7 +109,7 @@ module.exports = uniq([
 ])
 ```
 
-- index.js 动态生成，用户在代码中导入，可获得所有 api 的 key 到真实路径或 mock 路径的映射
+- src/shared/index.js 动态生成，用户在代码中导入，可获得所有 api 的 key 到真实路径或 mock 路径的映射。有了映射关系，你就可以在 devServer 配置 Proxy 规则，或则配置 fetch 的 URL 拦截，路由到线上或 mock 资源
 
 ```javascript
 import api from 'shared/api'
