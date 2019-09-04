@@ -61,8 +61,9 @@ module.exports = function(
   let source = []
   if (swaggerDocs instanceof Array) {
     source = source.concat(swaggerDocs.map(docs => getSwaggerSource(docs)))
-  } else {
-    source.push(getSwaggerSource(swaggerDocs))
+  } else if (typeof swaggerDocs === 'string') {
+    const swaggerSource = getSwaggerSource(swaggerDocs)
+    if (swaggerSource) source.push(swaggerSource)
   }
 
   let sourceLocal = globby.sync(jsonPath, {
@@ -70,7 +71,7 @@ module.exports = function(
       extensions: ['json'],
     },
   })
-
+  console.log(source, sourceLocal)
   sourceLocal = sourceLocal.map(json => {
     const source = path.basename(json)
     return getSwaggerSource({ source, dataNode: 'default' })
@@ -86,6 +87,7 @@ module.exports = function(
       `You should config swagger json source \'swaggerDocs\' in .umirc.js,
 see: https://github.com/Leonard-Li777/swagger-to-umi-mock-server`,
     )
+    process.exit(1)
   }
   api.addMiddlewareAhead(() => require('serve-static')(jsonPath))
 

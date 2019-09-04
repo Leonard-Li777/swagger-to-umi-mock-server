@@ -83,18 +83,18 @@ module.exports = function(path) {
 
 ```javascript
 {
- list: '/queries/third/asset/list',
- list: '/queries/client/app/list',
- checkstand: '/queries/client/checkstand',
+ appList: '/queries/third/app/list',
+ appList: '/queries/client/app/list',
+ clientCheckstandById: '/queries/client/checkstand/{id}',
  ...
 }
 ```
 
-- src/shared/apiRename.js 用户自定义对象用于 api 重命名，因为来自 swagger json 的 api key，都取自 api 路径的最末尾，可能存在重复，如上面 apiMap.js 文件的 list key 重复，需要通过 apiRename.js 重命名
+- src/shared/apiRename.js 用户自定义对象用于 api 重命名，因为来自 swagger json 的 api key，都取自 api 路径的最末尾两级路径，可能存在重复，如上面 apiMap.js 文件的 list key 重复，需要通过 apiRename.js 重命名
 
 ```javascript
 module.exports = {
-  appList: '/queries/client/app/list',
+  clientAppList: '/queries/client/app/list',
 }
 ```
 
@@ -103,9 +103,9 @@ module.exports = {
 ```javascript
 const { uniq } = require('lodash')
 module.exports = uniq([
-  //'list', 注释掉指定API，将走线上
-  'appList', // 此API会走Mock服务器
-  'checkstand', // 此API会走Mock服务器
+  //'appList', 注释掉指定API，将走线上
+  'clientAppList', // 此API会走Mock服务器
+  'clientCheckstandById', // 此API会走Mock服务器
 ])
 ```
 
@@ -114,16 +114,16 @@ module.exports = uniq([
 ```javascript
 import api from 'shared/api'
 
-fetch(api.list, { method: 'POST' }).then(response => {...}) // 请求线上api
-fetch(api.appList).then(response => {...}) // 请求mock api
-fetch(api.checkstand, { method: 'POST' }).then(response => {...}) // 请求mock api
+fetch(api.appList, { method: 'POST' }).then(response => {...}) // 请求线上api
+fetch(api.clientAppList).then(response => {...}) // 请求mock api
+fetch(`${api.clientCheckstandById}${id}`, { method: 'POST' }).then(response => {...}) // 请求mock api
 
 console.log(api)
 -------------------
 => {
- list: '/queries/third/asset/list',
- appList: '/mock/queries/client/app/list',
- checkstand: '/mock/queries/client/checkstand',
+ appList: '/queries/third/app/list',
+ clientAppList: '/mock/queries/client/app/list',
+ clientCheckstandById: '/mock/queries/client/checkstand/',
  ...
 }
 ```

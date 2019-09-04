@@ -5,7 +5,7 @@ const { join } = require('path')
 const chalk = require('chalk')
 const swaggerToMock = require('umi-plugin-swagger-to-mock')
 const yParser = require('yargs-parser')
-
+const { findIndex, isEmpty } = require('lodash')
 // print version and @local
 const args = yParser(process.argv.slice(2))
 if (args.v || args.version) {
@@ -18,7 +18,7 @@ if (args.v || args.version) {
 
 // Notify update when process exits
 const updater = require('update-notifier')
-const pkg = require('../package.json')
+const pkg = require('../package.json') // eslint-disable-line
 
 updater({ pkg }).notify({ defer: true })
 
@@ -39,17 +39,42 @@ const paths = getPaths.default({ cwd, config })
 
 const api = {
   cwd,
-  addMiddlewareAhead: function(md) {
+  addMiddlewareAhead(md) {
     this.md = md
   },
-  afterDevServer: function(start) {
+  afterDevServer(start) {
     this.start = start
   },
-  onDevCompileDone: function(done) {
+  onDevCompileDone(done) {
     this.done = done
   },
 }
-swaggerToMock(api, config.plugins[0][1])
+
+function getOptions(plugins) {
+  //  里拿到.umirc.js 里umi-plugin-swagger-to-mock 的 options
+  if (findIndex(plugins, 'umi-plugin-swagger-to-mock') >= 0) return {}
+  let ret = {}
+  plugins
+    .filter(item => item instanceof Array)
+    .forEach(([item, options = {}]) => {
+      if (/(umi-plugin-)?swagger-to-mock/.test(item)) ret = options
+    })
+  return ret
+}
+
+const options = getOptions(config.plugins)
+if (isEmpty(options)) {
+  console.log(
+    'warning: you need configure the options of umi-plugin-swagger-to-mock in <You Project>/.umirc.js. ',
+  )
+  console.log(
+    'See: https://github.com/Leonard-Li777/swagger-to-umi-mock-server#配置umircjs',
+  )
+  console.log('Used default configuration!')
+}
+
+swaggerToMock(api, options)
+
 // 获取 config 之前先注册一遍
 registerBabel()
 const app = express()

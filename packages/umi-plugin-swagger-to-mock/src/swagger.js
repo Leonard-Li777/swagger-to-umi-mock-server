@@ -1,6 +1,6 @@
 const swaggerParserMock = require('swagger-parser-mock')
 
-const formatData = data => {
+const defaultFormatData = data => {
   return {
     code: 200,
     message: '成功',
@@ -8,7 +8,7 @@ const formatData = data => {
   }
 }
 
-module.exports = (source, formatData = formatData) =>
+module.exports = (source, formatData = defaultFormatData) =>
   source.map(async ({ dataNode = 'default', source }) => {
     const docs = await swaggerParserMock(source).then(docs =>
       Object.keys(docs.paths).map(path => {

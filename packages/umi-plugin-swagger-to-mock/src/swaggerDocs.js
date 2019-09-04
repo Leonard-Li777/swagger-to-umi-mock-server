@@ -1,5 +1,12 @@
 const { join } = require('path')
-const { merge, cloneDeep, invert } = require('lodash')
+const {
+  merge,
+  cloneDeep,
+  invert,
+  compact,
+  flatten,
+  camelCase,
+} = require('lodash')
 const fs = require('fs-extra')
 const globby = require('globby')
 const Mustache = require('mustache')
@@ -35,27 +42,30 @@ const api = async ({
 
   const apiKey = invert(apiKeyRename)
 
-  const apiItem = await Promise.all(docs(source, formatData)).then(
-    ([java, net]) =>
-      java.concat(net).reduce(
-        (ret, { path, method, summary, data }) => {
-          const key =
-            apiKey[path] ||
+  const apiItem = await Promise.all(docs(source, formatData)).then(api =>
+    compact(flatten(api)).reduce(
+      (ret, { path, method, summary, data }) => {
+        const key =
+          apiKey[path] ||
+          camelCase(
             path
-              .split('/')
-              .pop()
-              .replace(/[^a-zA-Z0-9]/g, '')
-          const methodKey = `${method.toLowerCase()} \$\{api.${key}\}`
+              .replace(/.*\/(\w+)\/(\w+)(\/{(\w+)})?$/g, '$1_$2_by_$4')
+              .replace(/_by_$/, ''),
+          )
+        const methodKey = `${method.toLowerCase()} \$\{api.${key}\}`
 
-          const [overData, overDelay = 0] = override[key] || []
+        const [overData, overDelay = 0] = override[key] || []
 
-          overData && log.push(key) // 'merge data to: key',
+        overData && log.push(key) // 'merge data to: key',
 
-          ret.keyPathMap += `  ${key}: '${path}', // ${summary}
+        ret.keyPathMap += `  ${key}: '${path.replace(
+          /{\w+}$/g,
+          '',
+        )}', // ${summary} ${path}
 `
-          ret.keyList += `  '${key}', // ${summary}
+        ret.keyList += `  '${key}', // ${summary} ${path}
 `
-          ret.swaggerApi += `[\`${methodKey}\`]:createRes([ // ${summary}
+        ret.swaggerApi += `[\`${methodKey}\`]:createRes([ // ${summary} ${path}
   ${JSON.stringify(
     overData ? merge(cloneDeep(data), overData) : data,
     null,
@@ -64,10 +74,10 @@ const api = async ({
   ${overDelay}
 ]),
 `
-          return ret
-        },
-        { swaggerApi: '', keyPathMap: '', keyList: '' },
-      ),
+        return ret
+      },
+      { swaggerApi: '', keyPathMap: '', keyList: '' },
+    ),
   )
   const swaggerApiFileData = `/* eslint-disable */
 const createRes = require('umi-plugin-swagger-to-mock/lib/createRes')
