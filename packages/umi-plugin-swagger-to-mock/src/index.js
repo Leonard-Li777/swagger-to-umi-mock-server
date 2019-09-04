@@ -71,7 +71,7 @@ module.exports = function(
       extensions: ['json'],
     },
   })
-  console.log(source, sourceLocal)
+
   sourceLocal = sourceLocal.map(json => {
     const source = path.basename(json)
     return getSwaggerSource({ source, dataNode: 'default' })
