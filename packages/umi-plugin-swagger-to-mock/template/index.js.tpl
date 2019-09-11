@@ -16,13 +16,15 @@ module.exports = (({ mock, apiMap, apiRename, apiPathToMockPath = path2mockDefau
 	let apiKeys = []
 
 	try {
-		// 开发情况下，指定api转mock路径
-		if (window && mock.length) {
+		if (window && mock.length) { // 浏览器环境，指定api转mock路径
 			apiKeys = mock
 		}
 	} catch (e) {
-		// Mock服务器获取全部api转mock路径
-		apiKeys = Object.keys(api)
+		if (/umi-swagger-server$/.test(process.env._)) { // Node环境，Mock服务器获取全部api转mock路径
+			apiKeys = Object.keys(api)
+		} else if (mock.length) { // Node环境，指定api转mock路径
+			apiKeys = mock
+		}
 	}
 
 	apiKeys.forEach(key => {
