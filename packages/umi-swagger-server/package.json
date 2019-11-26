@@ -35,7 +35,7 @@
 	"dependencies": {
 		"debug": "^4.1.1",
 		"express": "^4.16.4",
-		"umi-build-dev": "^1.9.4",
+		"umi-build-dev": "1.9.6",
 		"umi-plugin-swagger-to-mock": "0.0.9",
 		"update-notifier": "^3.0.0"
 	}
