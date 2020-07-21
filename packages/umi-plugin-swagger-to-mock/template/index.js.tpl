@@ -11,7 +11,7 @@ function path2mockDefault(path) {
 	return `/mock/${path.replace(/^\//, '')}`
 }
 
-module.exports = (({ mock, apiMap, apiRename, apiPathToMockPath = path2mockDefault }) => {
+const apiList = (({ mock, apiMap, apiRename, apiPathToMockPath = path2mockDefault }) => {
 	const api = Object.assign(apiMap, apiRename)
 	let apiKeys = []
 
@@ -33,3 +33,5 @@ module.exports = (({ mock, apiMap, apiRename, apiPathToMockPath = path2mockDefau
 	})
 	return api
 })({ mock, apiMap, apiRename{{#apiPathToMockPath}}, apiPathToMockPath: require('./apiPathToMockPath.js'){{/apiPathToMockPath}} })
+
+export defalut apiList
