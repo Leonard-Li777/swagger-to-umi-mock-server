@@ -49,7 +49,10 @@ const api = async ({
           apiKey[path] ||
           camelCase(
             path
-              .replace(/.*\/(\w+)\/(\w+)(\/{(\w+)})?$/g, '$1_$2_by_$4')
+              .replace(
+                /.*\/([a-zA-Z]\w+)\/([a-zA-Z]\w+)(\/\{(\w+)\})*$/g,
+                '$1_$2_by_$4',
+              )
               .replace(/_by_$/, ''),
           )
         const methodKey = `${method.toLowerCase()} \$\{api.${key}\}`
@@ -59,7 +62,7 @@ const api = async ({
         overData && log.push(key) // 'merge data to: key',
 
         ret.keyPathMap += `  ${key}: '${path.replace(
-          /{\w+}$/g,
+          /(\/\{\w+\})*$/g,
           '',
         )}', // ${summary} ${path}
 `
