@@ -1,6 +1,6 @@
 {
  "name": "swagger-to-umi-mock-server",
- "version": "0.0.3",
+ "version": "0.0.4",
  "description": "swagger 文档一健转 umi mock 服务 (swagger docs transform to umi mock server)",
  "main": "lib/index.js",
  "bin": {
