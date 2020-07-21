@@ -1,6 +1,6 @@
 {
 	"name": "umi-plugin-swagger-to-mock",
-	"version": "0.0.9",
+	"version": "0.0.10",
 	"description": "swagger 文档一健转 umi mock 服务 (swagger docs transform to umi mock server)",
 	"main": "lib/index.js",
 	"bin": {
