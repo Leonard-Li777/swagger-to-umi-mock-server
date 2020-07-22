@@ -34,4 +34,4 @@ const apiList = (({ mock, apiMap, apiRename, apiPathToMockPath = path2mockDefaul
 	return api
 })({ mock, apiMap, apiRename{{#apiPathToMockPath}}, apiPathToMockPath: require('./apiPathToMockPath.js'){{/apiPathToMockPath}} })
 
-export defalut apiList
+export default apiList
