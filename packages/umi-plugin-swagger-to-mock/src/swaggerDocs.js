@@ -84,7 +84,7 @@ const api = async ({
   )
   const swaggerApiFileData = `/* eslint-disable */
 const createRes = require('umi-plugin-swagger-to-mock/lib/createRes')
-const api = require('${absSwaggerOutputPath}/index.js')
+const api = require('${absSwaggerOutputPath}/index.node.js')
 
 module.exports = {
   ${apiItem.swaggerApi}
@@ -113,19 +113,24 @@ ${apiItem.keyList}
     'utf-8',
   )
 
-  const indexTpl = fs.readFileSync(
-    join(__dirname, '../template/index.js.tpl'),
-    'utf-8',
-  )
-  const indexContent = Mustache.render(indexTpl, {
-    apiPathToMockPath: fs.existsSync(
-      `${absSwaggerOutputPath}/apiPathToMockPath.js`,
-    ),
-    apiRename: fs.existsSync(`${absSwaggerOutputPath}/apiRename.js`),
-    mock: fs.existsSync(`${absSwaggerOutputPath}/mock.js`),
-  })
-  const index = `${absSwaggerOutputPath}/index.js`
-  fs.outputFileSync(index, indexContent, 'utf-8')
+  function genApiIndex(fileName) {
+    const data = {
+      apiPathToMockPath: fs.existsSync(
+        `${absSwaggerOutputPath}/apiPathToMockPath.js`,
+      ),
+      apiRename: fs.existsSync(`${absSwaggerOutputPath}/apiRename.js`),
+      mock: fs.existsSync(`${absSwaggerOutputPath}/mock.js`),
+    }
+    const indexTpl = fs.readFileSync(
+      join(__dirname, `../template/${fileName}.tpl`),
+      'utf-8',
+    )
+    const indexContent = Mustache.render(indexTpl, data)
+    const index = `${absSwaggerOutputPath}/${fileName}`
+    fs.outputFileSync(index, indexContent, 'utf-8')
+  }
+  genApiIndex('index.js')
+  genApiIndex('index.node.js')
 
   return log
 }
